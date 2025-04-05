@@ -6,7 +6,12 @@ esbuild.build({
     bundle: true,
     outdir: 'dist',
     minify: true,
-    loader: { '.png': 'dataurl' },
+    loader: {
+        '.png': 'dataurl',
+        '.vert': 'text',
+        '.frag': 'text',
+        '.wgsl': 'text'
+    },
     plugins: [htmlPlugin({
         files: [{
             filename: 'index.html',

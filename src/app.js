@@ -1,5 +1,8 @@
-import { Application, Assets, Sprite } from 'pixi.js';
+import { Application, Assets, Geometry, Mesh, Shader, Sprite } from 'pixi.js';
 import bunnyUrl from '../assets/bunny.png';
+import vertex from '../assets/triangleColor.vert';
+import fragment from '../assets/triangleColor.frag';
+import source from '../assets/triangleColor.wgsl';
 
 document.body.style.margin = '0';
 
@@ -9,10 +12,44 @@ document.body.style.margin = '0';
     const app = new Application();
 
     // Initialize the application
-    await app.init({ background: '#1099bb', width: 360, height: 640 });
+    await app.init({ width: 360, height: 640, preference: 'webgpu' });
 
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
+
+    const geometry = new Geometry({
+        attributes: {
+            aPosition: [-100, -50, 100, -50, 0, 100],
+            aColor: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+        },
+    });
+
+    const gl = { vertex, fragment };
+
+    const gpu = {
+        vertex: {
+            entryPoint: 'mainVert',
+            source,
+        },
+        fragment: {
+            entryPoint: 'mainFrag',
+            source,
+        },
+    };
+
+    const shader = Shader.from({
+        gl,
+        gpu,
+    });
+
+    const triangle = new Mesh({
+        geometry,
+        shader,
+    });
+
+    triangle.position.set(200, 300);
+
+    app.stage.addChild(triangle);
 
     // Load the bunny texture
     const texture = await Assets.load(bunnyUrl);
@@ -32,6 +69,8 @@ document.body.style.margin = '0';
     // Listen for animate update
     app.ticker.add((time) =>
     {
+        triangle.rotation += 0.05 * time.deltaTime;
+
         // Just for fun, let's rotate mr rabbit a little.
         // * Delta is 1 if running at 100% performance *
         // * Creates frame-independent transformation *

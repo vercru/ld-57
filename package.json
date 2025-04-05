@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "esbuild src/app.js --bundle --outdir=www --watch --servedir=www --sourcemap --loader:.png=dataurl",
+    "start": "esbuild src/app.js --bundle --outdir=www --watch --servedir=www --sourcemap --loader:.png=dataurl --loader:.vert=text --loader:.frag=text --loader:.wgsl=text",
     "build": "node esbuild.config.js"
   },
   "devDependencies": {
