@@ -1,13 +1,15 @@
 import { Application, Assets, Sprite } from 'pixi.js';
 import bunnyUrl from '../assets/bunny.png';
 
+document.body.style.margin = '0';
+
 (async () =>
 {
     // Create a new application
     const app = new Application();
 
     // Initialize the application
-    await app.init({ background: '#1099bb', resizeTo: window });
+    await app.init({ background: '#1099bb', width: 360, height: 640 });
 
     // Append the application canvas to the document body
     document.body.appendChild(app.canvas);
