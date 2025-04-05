@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "scripts": {
+    "start": "esbuild src/app.js --bundle --outdir=www --watch --servedir=www --sourcemap --loader:.png=dataurl",
+    "build": "esbuild src/app.js --bundle --outdir=dist --minify --loader:.png=dataurl"
+  },
+  "devDependencies": {
+    "esbuild": "0.25.2",
+    "pixi.js": "8.9.1"
+  }
+}
