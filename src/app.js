@@ -1,79 +1,42 @@
-import { Application, Assets, Geometry, Mesh, Shader, Sprite } from 'pixi.js';
-import bunnyUrl from '../assets/bunny.png';
-import vertex from '../assets/triangleColor.vert';
-import fragment from '../assets/triangleColor.frag';
-import source from '../assets/triangleColor.wgsl';
+import { BoxGeometry, Mesh, MeshBasicMaterial, MeshPhongMaterial, PerspectiveCamera, Scene } from "three/src/Three.Core.js";
+import { WebGLRenderer } from "three/src/Three.js";
 
 document.body.style.margin = '0';
+document.body.style.backgroundColor = '#111'
+
+const width = 360;
+const height = 640;
 
 (async () =>
 {
-    // Create a new application
-    const app = new Application();
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(75, width / height, 0.1, 1000);
 
-    // Initialize the application
-    await app.init({ width: 360, height: 640, preference: 'webgpu' });
+    const renderer = new WebGLRenderer();
+    renderer.setSize(width, height);
 
-    // Append the application canvas to the document body
-    document.body.appendChild(app.canvas);
+    renderer.domElement.style.position = 'fixed';
+    renderer.domElement.style.inset = '0';
+    renderer.domElement.style.margin = 'auto';
+    renderer.domElement.style.maxWidth = '100%';
+    renderer.domElement.style.maxHeight = '100%';
+    renderer.domElement.style.overflow = 'auto';
 
-    const geometry = new Geometry({
-        attributes: {
-            aPosition: [-100, -50, 100, -50, 0, 100],
-            aColor: [1, 0, 0, 0, 1, 0, 0, 0, 1],
-        },
-    });
+    document.body.appendChild(renderer.domElement);
 
-    const gl = { vertex, fragment };
+    const geometry = new BoxGeometry(1, 1, 1);
+    const material = new MeshBasicMaterial({ color: 0x00ff00 });
+    const cube = new Mesh(geometry, material);
+    scene.add(cube);
 
-    const gpu = {
-        vertex: {
-            entryPoint: 'mainVert',
-            source,
-        },
-        fragment: {
-            entryPoint: 'mainFrag',
-            source,
-        },
-    };
+    camera.position.z = 5;
 
-    const shader = Shader.from({
-        gl,
-        gpu,
-    });
+    function animate() {
+        cube.rotation.x += 0.01;
+        cube.rotation.y += 0.02;
 
-    const triangle = new Mesh({
-        geometry,
-        shader,
-    });
+        renderer.render(scene, camera);
+    }
 
-    triangle.position.set(200, 300);
-
-    app.stage.addChild(triangle);
-
-    // Load the bunny texture
-    const texture = await Assets.load(bunnyUrl);
-
-    // Create a bunny Sprite
-    const bunny = new Sprite(texture);
-
-    // Center the sprite's anchor point
-    bunny.anchor.set(0.5);
-
-    // Move the sprite to the center of the screen
-    bunny.x = app.screen.width / 2;
-    bunny.y = app.screen.height / 2;
-
-    app.stage.addChild(bunny);
-
-    // Listen for animate update
-    app.ticker.add((time) =>
-    {
-        triangle.rotation += 0.05 * time.deltaTime;
-
-        // Just for fun, let's rotate mr rabbit a little.
-        // * Delta is 1 if running at 100% performance *
-        // * Creates frame-independent transformation *
-        bunny.rotation += 0.1 * time.deltaTime;
-    });
+    renderer.setAnimationLoop(animate);
 })();
