@@ -1,4 +1,5 @@
-import { BoxGeometry, Mesh, MeshBasicMaterial, MeshPhongMaterial, PerspectiveCamera, Scene } from "three/src/Three.Core.js";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
+import { BoxGeometry, ConeGeometry, Mesh, MeshPhongMaterial, PerspectiveCamera, PointLight, Scene, TorusKnotGeometry } from "three/src/Three.Core.js";
 import { WebGLRenderer } from "three/src/Three.js";
 
 document.body.style.margin = '0';
@@ -7,36 +8,47 @@ document.body.style.backgroundColor = '#111'
 const width = 360;
 const height = 640;
 
-(async () =>
-{
-    const scene = new Scene();
-    const camera = new PerspectiveCamera(75, width / height, 0.1, 1000);
+const scene = new Scene();
+const camera = new PerspectiveCamera(75, width / height, 0.1, 1000);
+scene.add(camera);
 
-    const renderer = new WebGLRenderer();
-    renderer.setSize(width, height);
+const renderer = new WebGLRenderer();
+renderer.setSize(width, height);
 
-    renderer.domElement.style.position = 'fixed';
-    renderer.domElement.style.inset = '0';
-    renderer.domElement.style.margin = 'auto';
-    renderer.domElement.style.maxWidth = '100%';
-    renderer.domElement.style.maxHeight = '100%';
-    renderer.domElement.style.overflow = 'auto';
+const canvas = renderer.domElement;
 
-    document.body.appendChild(renderer.domElement);
+canvas.style.position = 'fixed';
+canvas.style.inset = '0';
+canvas.style.margin = 'auto';
+canvas.style.maxWidth = '100%';
+canvas.style.maxHeight = '100%';
+canvas.style.overflow = 'auto';
 
-    const geometry = new BoxGeometry(1, 1, 1);
-    const material = new MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new Mesh(geometry, material);
-    scene.add(cube);
+document.body.appendChild(canvas);
 
-    camera.position.z = 5;
+const controls = new OrbitControls(camera, canvas);
+controls.update();
 
-    function animate() {
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.02;
+const light = new PointLight(0x00ffff, 20);
+camera.add(light);
 
-        renderer.render(scene, camera);
-    }
+const geometry = new TorusKnotGeometry(1, 0.4, 128, 16);
+const material = new MeshPhongMaterial({ color: 0x00ff00, shininess: 1500 });
+const cube = new Mesh(geometry, material);
+scene.add(cube);
 
-    renderer.setAnimationLoop(animate);
-})();
+camera.position.z = 5;
+
+let then = 0;
+
+function animate(now) {
+    const delta = now - then;
+    then = now;
+
+    // cube.rotation.x += 0.002 * delta;
+    // cube.rotation.y += 0.004 * delta;
+
+    renderer.render(scene, camera);
+}
+
+renderer.setAnimationLoop(animate);
