@@ -1,6 +1,8 @@
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
-import { BoxGeometry, ConeGeometry, Mesh, MeshPhongMaterial, PerspectiveCamera, PointLight, Scene, TorusKnotGeometry } from "three/src/Three.Core.js";
+import { Mesh, PerspectiveCamera, PointLight, Scene, ShaderMaterial, TorusKnotGeometry, Vector2 } from "three/src/Three.Core.js";
 import { WebGLRenderer } from "three/src/Three.js";
+
+import foo from '../assets/triangleColor.frag';
 
 document.body.style.margin = '0';
 document.body.style.backgroundColor = '#111'
@@ -33,7 +35,7 @@ const light = new PointLight(0x00ffff, 20);
 camera.add(light);
 
 const geometry = new TorusKnotGeometry(1, 0.4, 128, 16);
-const material = new MeshPhongMaterial({ color: 0x00ff00, shininess: 1500 });
+const material = new ShaderMaterial({ uniforms: { u_resolution: { value: new Vector2(width, height) }, u_time: { value: 0 } }, fragmentShader: foo });
 const cube = new Mesh(geometry, material);
 scene.add(cube);
 
@@ -47,6 +49,8 @@ function animate(now) {
 
     // cube.rotation.x += 0.002 * delta;
     // cube.rotation.y += 0.004 * delta;
+
+    material.uniforms.u_time.value = now * 0.001;
 
     renderer.render(scene, camera);
 }

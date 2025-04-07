@@ -1,12 +1,12 @@
-import * as esbuild from 'esbuild';
-import { htmlPlugin } from '@craftamap/esbuild-plugin-html';
-import { glsl } from 'esbuild-plugin-glsl-include';
+const { build } = require('esbuild');
+const { htmlPlugin } = require('@craftamap/esbuild-plugin-html');
 
-esbuild.build({
+
+build({
     entryPoints: ['src/app.js'],
     bundle: true,
     outdir: 'dist',
-    minify: false,
+    minify: true,
     loader: { '.png': 'dataurl' },
     plugins: [
         htmlPlugin({
@@ -15,7 +15,7 @@ esbuild.build({
                 entryPoints: ['src/app.js'],
             }],
         }),
-        glsl(),
+        glsl({ minify: true }),
     ],
 }).catch((error) => {
     console.error(error);
